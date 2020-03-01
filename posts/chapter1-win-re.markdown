@@ -57,7 +57,7 @@ The Corelan developers have used Perl as their choice of language but I'll be us
 
 So, let's start off by analysing the UI of this application:
 
-![Easy RM](/images/chapter1/image1.png)
+![Easy RM](/images/image1.png)
 
 From my research on this application, it converts .m3u files to .mp3. Only problem? This application puts data directly onto the stack. If we overflow/crash it just right, we will be able to manipulate the stack and its pointers to our liking.
 
@@ -75,21 +75,21 @@ f.write(trash)
 f.close()
 ```
 
-![lol.m3u](/images/chapter1/image2.png)
+![lol.m3u](/images/image2.png)
 
 Now let's transfer this .m3u to the victim machine and load the file. I’m using the drag and drop feature in Virtualbox but you can alternatively used the shared folders feature.
 
-![AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA](/assets/img/posts/4p0cryph0n/chapter1/image3.png)
+![AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA](/images/image3.png)
 
 Okay, we haven't crashed the application yet, and the program has handled our exception successfully. Let’s reopen our application and try with 30000 As.	
 
-![Crashed](/assets/img/posts/4p0cryph0n/chapter1/image4.png)
+![Crashed](/images/image4.png)
 
 And it's crashed. So, we know how to crash it now, but what good does that do? We need to crash it in our desired way. Think of it like orchestrated chaos ;)
 
 Now let's fire the debugger up and see what's under the hood. Click on File > Open and select the app. Then, click on the play button and load your file like normal.
 
-![Debugger registers](/images/chapter1/image5.png)
+![Debugger registers](/images/image5.png)
 
 A quick look at the registers shows us that EIP has the value of `41414141` (AAAA).
 
@@ -99,7 +99,7 @@ Also, we can see that we have also filled the register ESP with our As. ESP is a
 
 Shift your vision to the stack window as well, this will also tell us the ESP and EIP are filled with our As. The value that is currently highlighted shows the data in ESP.
 
-![Stack Window](/images/chapter1/image6.png)
+![Stack Window](/images/image6.png)
 
 Now, we need to find something called an offset. This is the number of bytes we need to overflow the stack by, to reach a specific location. Think of it like filling a beaker with a solution. You need to reach the 150 cm<sup>3</sup> mark, so you will only fill until you reach that mark.
 
@@ -122,7 +122,7 @@ f.close()
 
 Now, let's generate the file and load it within the debugger.
 
-![AB Buffer Registers](/images/chapter1/image7.png)
+![AB Buffer Registers](/images/image7.png)
 
 Okay great, as EIP has the value of `42424242` (BBBB), it tells us that somewhere in our 5000 Bs EIP has already been reached.
 
@@ -134,11 +134,11 @@ Your kali box comes with two very important tools for this: `pattern_create.rb` 
 
 `/usr/share/metasploit-framework/tools/pattern_create.rb -l 5000`
 
-![Pattern generator trash](/images/chapter1/image8.png)
+![Pattern generator trash](/images/image8.png)
 
 Let's generate the file with metasploit and load it within the debugger.
 
-![Debugger](/images/chapter1/image9.png)
+![Debugger](/images/image9.png)
 
 As I said before, the one that is highlighted in green is the value stored in ESP. If you go one address up in the stack window, you will see what's stored in EIP. `J8bj` in my case. Now, let's find out how many bytes did it take to reach EIP using `pattern_offset.rb`.
 
@@ -164,6 +164,6 @@ f.close()
 
 Now, let's see if our Math game is strong ;)
 
-![EIP Control](/images/chapter1/image10.png)
+![EIP Control](/images/image10.png)
 
 Yess! We now have control of the EIP which determines the next instructions to be executed. If you made it this far give yourself a pat on the back! In the next chapter we'll be generating and placing shellcode then with our control over EIP executing our payload.
